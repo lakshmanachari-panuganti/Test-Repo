@@ -1,9 +1,3 @@
-# Copy this to .github/workflows/pr-lifecycle.yml in a participating repository.
-#
-# Adjust `language`, `test-command` and `enable-agents` to match the repository, then
-# add the repository to governance/repositories.json in the administration repository
-# so the reconcile job applies its rulesets.
-
 name: PR Lifecycle
 
 on:
@@ -14,9 +8,9 @@ on:
 
 jobs:
   lifecycle:
-    uses: lakshmanachari-panuganti/Repository-Administration-Governance/.github/workflows/pr-lifecycle.yml@main
+    uses: lakshmanachari-panuganti/Repository-Administration-Governance/.github/workflows/pr-lifecycle.yml@develop
     with:
-      language: none          # node | powershell | none
-      test-command: ''        # blank uses the language default
+      language: none
+      test-command: ''
       enable-agents: false
     secrets: inherit
