@@ -1,5 +1,9 @@
 name: PR Lifecycle
 
+# Thin caller. The implementation lives in the administration repository so a fix
+# reaches every repository at once.
+# https://github.com/lakshmanachari-panuganti/Repository-Administration-Governance
+
 on:
   pull_request:
     # labeled/unlabeled matter: needs-human is applied by a person after the pull request
@@ -10,9 +14,9 @@ on:
 
 jobs:
   lifecycle:
-    uses: lakshmanachari-panuganti/Repository-Administration-Governance/.github/workflows/pr-lifecycle.yml@develop
+    uses: lakshmanachari-panuganti/Repository-Administration-Governance/.github/workflows/pr-lifecycle.yml@main
     with:
-      language: none          # node | powershell | none
-      test-command: ''        # blank uses the language default
+      language: none
+      test-command: ''
       enable-agents: false
     secrets: inherit
