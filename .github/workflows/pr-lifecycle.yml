@@ -2,7 +2,7 @@ name: PR Lifecycle
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [opened, synchronize, reopened, ready_for_review, labeled, unlabeled]
   pull_request_review:
     types: [submitted]
 
@@ -12,5 +12,5 @@ jobs:
     with:
       language: none
       test-command: ''
-      enable-agents: false
+      enable-agents: true
     secrets: inherit
