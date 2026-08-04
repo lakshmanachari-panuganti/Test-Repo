@@ -1,14 +1,14 @@
-# Copy this to .github/workflows/pr-lifecycle.yml in a participating repository.
-#
-# Adjust `language`, `test-command` and `enable-agents` to match the repository, then
-# add the repository to governance/repositories.json in the administration repository
-# so the reconcile job applies its rulesets.
-
 name: PR Lifecycle
+
+# Thin caller. The implementation lives in the administration repository so a fix
+# reaches every repository at once.
+# https://github.com/lakshmanachari-panuganti/Repository-Administration-Governance
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    # labeled/unlabeled matter: needs-human is applied by a person after the pull request
+    # already exists, and without these the lifecycle never re-evaluates it.
+    types: [opened, synchronize, reopened, ready_for_review, labeled, unlabeled]
   pull_request_review:
     types: [submitted]
 
@@ -16,7 +16,7 @@ jobs:
   lifecycle:
     uses: lakshmanachari-panuganti/Repository-Administration-Governance/.github/workflows/pr-lifecycle.yml@main
     with:
-      language: none          # node | powershell | none
-      test-command: ''        # blank uses the language default
+      language: none
+      test-command: ''
       enable-agents: false
     secrets: inherit
