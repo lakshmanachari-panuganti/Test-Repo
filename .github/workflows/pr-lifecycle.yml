@@ -1,0 +1,15 @@
+name: PR Lifecycle
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  lifecycle:
+    uses: lakshmanachari-panuganti/.github/.github/workflows/pr-lifecycle.yml@main
+    with:
+      language: none
+      enable-agents: false
+    secrets: inherit
