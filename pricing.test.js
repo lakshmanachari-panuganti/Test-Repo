@@ -110,6 +110,50 @@ test('shippingFee is free above the threshold', () => {
   assert.equal(shippingFee(60000, 'metro'), 0);
 });
 
+test('shippingFee charges the local zone rate', () => {
+  assert.equal(shippingFee(20000, 'local'), 4000);
+});
+
+test('shippingFee charges the national zone rate', () => {
+  assert.equal(shippingFee(20000, 'national'), 9000);
+});
+
+test('shippingFee charges at exactly the free-shipping threshold', () => {
+  // The comparison is strict `>`, so a subtotal equal to the threshold
+  // still pays the zone rate; only amounts above it ship free.
+  assert.equal(shippingFee(50000, 'metro'), 6000);
+});
+
+test('shippingFee is free just above the threshold', () => {
+  assert.equal(shippingFee(50001, 'metro'), 0);
+});
+
+test('shippingFee throws TypeError for an unknown zone', () => {
+  assert.throws(() => shippingFee(20000, 'moon'), TypeError);
+});
+
+test('shippingFee throws TypeError for an inherited-property zone name', () => {
+  // 'toString' is not an own property of ZONE_RATES, so the
+  // hasOwnProperty guard must reject it instead of resolving
+  // Function.prototype.toString via the prototype chain.
+  assert.throws(() => shippingFee(20000, 'toString'), TypeError);
+});
+
+test('shippingFee throws TypeError for a non-integer subtotalPaise', () => {
+  assert.throws(() => shippingFee(NaN, 'metro'), TypeError);
+});
+
+test('shippingFee throws TypeError for a negative subtotalPaise', () => {
+  assert.throws(() => shippingFee(-100, 'metro'), TypeError);
+});
+
 test('grandTotal adds shipping to the discounted order total', () => {
-  assert.equal(grandTotal([{ price: 10000, qty: 1 }], 0, 'local', 0), 4100);
+  // 10000 paise item, no GST, no discount, local zone: 10000 + 4000 = 14000.
+  assert.equal(grandTotal([{ price: 10000, qty: 1 }], 0, 'local', 0), 14000);
+});
+
+test('grandTotal applies a non-zero discount before adding shipping', () => {
+  // 10000 paise item, no GST, 10% discount -> 9000 payable, plus 4000
+  // local shipping = 13000.
+  assert.equal(grandTotal([{ price: 10000, qty: 1 }], 0, 'local', 10), 13000);
 });
