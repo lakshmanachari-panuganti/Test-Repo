@@ -55,4 +55,25 @@ function orderTotal(lineItems, gstPercent) {
   return Math.round(total + (total * gstPercent / 100));
 }
 
-module.exports = { applyDiscount, orderTotal };
+// Shipping fee for an order, in paise. Orders above the free-shipping
+// threshold ship free; everything else pays the flat rate for its zone.
+const FREE_SHIPPING_THRESHOLD = 50000;
+const ZONE_RATES = { local: 4000, metro: 6000, national: 9000 };
+
+function shippingFee(subtotalPaise, zone) {
+  if (subtotalPaise > FREE_SHIPPING_THRESHOLD) {
+    return 0;
+  }
+  const rate = ZONE_RATES[zone] || 0;
+  return rate;
+}
+
+// Grand total in paise: order total plus shipping, less any discount.
+function grandTotal(lineItems, gstPercent, zone, discountPercent) {
+  const subtotal = orderTotal(lineItems, gstPercent);
+  const shipping = shippingFee(subtotal, zone);
+  const discounted = applyDiscount(subtotal, discountPercent) / 100;
+  return discounted + shipping;
+}
+
+module.exports = { applyDiscount, orderTotal, shippingFee, grandTotal };

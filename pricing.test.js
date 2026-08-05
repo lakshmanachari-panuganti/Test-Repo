@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { applyDiscount, orderTotal } = require('./pricing');
+const { applyDiscount, orderTotal, shippingFee, grandTotal } = require('./pricing');
 
 test('applyDiscount at 0 percent returns the amount unchanged', () => {
   assert.equal(applyDiscount(10000, 0), 10000);
@@ -100,4 +100,16 @@ test('orderTotal throws RangeError for invalid gstPercent even when lineItems is
 test('orderTotal sums line items and adds GST, rounded to whole paise', () => {
   // (100*2 + 250*1) = 450 paise subtotal, +18% GST = 531 paise.
   assert.equal(orderTotal([{ price: 100, qty: 2 }, { price: 250, qty: 1 }], 18), 531);
+});
+
+test('shippingFee charges the zone rate below the free-shipping threshold', () => {
+  assert.equal(shippingFee(20000, 'metro'), 6000);
+});
+
+test('shippingFee is free above the threshold', () => {
+  assert.equal(shippingFee(60000, 'metro'), 0);
+});
+
+test('grandTotal adds shipping to the discounted order total', () => {
+  assert.equal(grandTotal([{ price: 10000, qty: 1 }], 0, 'local', 0), 4100);
 });
