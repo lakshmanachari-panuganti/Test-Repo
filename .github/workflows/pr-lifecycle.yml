@@ -11,6 +11,6 @@ jobs:
     uses: lakshmanachari-panuganti/Repository-Administration-Governance/.github/workflows/pr-lifecycle.yml@develop
     with:
       language: none
-      test-command: ''
+      test-command: 'node --test'
       enable-agents: true
     secrets: inherit
