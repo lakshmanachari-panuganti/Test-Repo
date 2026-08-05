@@ -3,7 +3,10 @@ name: PR Lifecycle
 # Thin caller. The implementation lives in the administration repository so a fix
 # reaches every repository at once.
 #
-# Repointed to @main now that the lifecycle changes are released.
+# test-command must stay set. With it empty the guard generates no test step, so
+# paginate.test.js and pricing.test.js are never executed by any run in this
+# repository - the tests exist, look reassuring, and prove nothing. The review agent
+# caught this on PR #24 after a caller update silently dropped it.
 
 on:
   pull_request:
@@ -16,6 +19,6 @@ jobs:
     uses: lakshmanachari-panuganti/Repository-Administration-Governance/.github/workflows/pr-lifecycle.yml@main
     with:
       language: none
-      test-command: ''
+      test-command: 'node --test'
       enable-agents: true
     secrets: inherit
