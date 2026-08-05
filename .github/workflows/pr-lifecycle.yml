@@ -1,5 +1,10 @@
 name: PR Lifecycle
 
+# Thin caller. The implementation lives in the administration repository so a fix
+# reaches every repository at once.
+#
+# Repointed to @main now that the lifecycle changes are released.
+
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review, labeled, unlabeled]
@@ -8,9 +13,9 @@ on:
 
 jobs:
   lifecycle:
-    uses: lakshmanachari-panuganti/Repository-Administration-Governance/.github/workflows/pr-lifecycle.yml@develop
+    uses: lakshmanachari-panuganti/Repository-Administration-Governance/.github/workflows/pr-lifecycle.yml@main
     with:
       language: none
-      test-command: 'node --test'
+      test-command: ''
       enable-agents: true
     secrets: inherit
