@@ -55,4 +55,35 @@ function orderTotal(lineItems, gstPercent) {
   return Math.round(total + (total * gstPercent / 100));
 }
 
-module.exports = { applyDiscount, orderTotal };
+// Shipping fee for an order, in paise. Orders above the free-shipping
+// threshold ship free; everything else pays the flat rate for its zone.
+const FREE_SHIPPING_THRESHOLD = 50000;
+const ZONE_RATES = { local: 4000, metro: 6000, national: 9000 };
+
+function shippingFee(subtotalPaise, zone) {
+  if (!Number.isInteger(subtotalPaise) || subtotalPaise < 0) {
+    throw new TypeError('subtotalPaise must be a non-negative integer number of paise');
+  }
+  if (subtotalPaise > FREE_SHIPPING_THRESHOLD) {
+    return 0;
+  }
+  if (!Object.prototype.hasOwnProperty.call(ZONE_RATES, zone)) {
+    throw new TypeError(`unknown shipping zone: ${zone}`);
+  }
+  return ZONE_RATES[zone];
+}
+
+// Grand total in paise: GST-inclusive order total plus shipping, less any
+// discount. Shipping is priced on totalWithGst (the pre-discount,
+// GST-inclusive total) against FREE_SHIPPING_THRESHOLD: GST can push an
+// order over the free-shipping line on its own, and a discount that drops
+// the payable amount below the threshold still ships free, because shipping
+// is computed before the discount is applied.
+function grandTotal(lineItems, gstPercent, zone, discountPercent) {
+  const totalWithGst = orderTotal(lineItems, gstPercent);
+  const shipping = shippingFee(totalWithGst, zone);
+  const discounted = applyDiscount(totalWithGst, discountPercent);
+  return discounted + shipping;
+}
+
+module.exports = { applyDiscount, orderTotal, shippingFee, grandTotal };
